@@ -1,0 +1,69 @@
+services:
+  # Backend API Service
+  - type: web
+    name: stm-intelligence-api
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stm-intelligence-db
+          property: connectionString
+      - key: CURATOR_TOKEN
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ENABLE_AUTOMATED_COLLECTION
+        value: true
+      - key: COLLECTION_SCHEDULE_HOUR
+        value: 9
+      # Optional: LinkedIn scraping (use with caution)
+      - key: LINKEDIN_EMAIL
+        sync: false
+      - key: LINKEDIN_PASSWORD
+        sync: false
+      # Optional: Email ingestion
+      - key: EMAIL_INGESTION_ENABLED
+        value: false
+      - key: EMAIL_IMAP_SERVER
+        sync: false
+      - key: EMAIL_USERNAME
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_TEMPERATURE
+        value: 0.5
+
+  # Frontend Static Site
+  - type: web
+    name: stm-intelligence-frontend
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: stm-intelligence-api
+          envVarKey: RENDER_EXTERNAL_URL
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: stm-intelligence-db
+    databaseName: intelligence_db
+    user: postgres
+    plan: starter
+    postgresMajorVersion: 15

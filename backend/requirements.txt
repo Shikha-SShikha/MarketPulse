@@ -1,0 +1,32 @@
+# Core dependencies
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+sqlalchemy==2.0.25
+alembic==1.13.1
+psycopg2-binary==2.9.9
+pgvector==0.3.6
+pydantic==2.5.3
+pydantic-settings==2.1.0
+apscheduler==3.10.4
+python-multipart==0.0.6
+
+# Data collection dependencies
+feedparser==6.0.11
+beautifulsoup4==4.12.3
+aiohttp==3.9.3
+python-dateutil==2.8.2
+playwright==1.41.2
+
+# AI/LLM dependencies
+openai==1.101.0
+
+# PDF generation
+cairocffi>=1.2.0
+pydyf==0.7.0
+weasyprint==56.1
+
+# Development
+pytest==7.4.4
+pytest-asyncio==0.23.3
+httpx==0.26.0
+black==24.1.1
