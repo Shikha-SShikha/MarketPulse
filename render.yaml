@@ -64,6 +64,5 @@ services:
 databases:
   - name: stm-intelligence-db
     databaseName: intelligence_db
-    user: postgres
     plan: starter
     postgresMajorVersion: 15
