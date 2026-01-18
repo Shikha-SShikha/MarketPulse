@@ -3,7 +3,7 @@ services:
   - type: web
     name: stm-intelligence-api
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /health
@@ -64,5 +64,5 @@ services:
 databases:
   - name: stm-intelligence-db
     databaseName: intelligence_db
-    plan: starter
+    plan: free
     postgresMajorVersion: 15
