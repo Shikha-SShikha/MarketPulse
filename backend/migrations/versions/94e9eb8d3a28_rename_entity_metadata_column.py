@@ -19,10 +19,11 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Rename metadata column to entity_metadata to avoid SQLAlchemy reserved word conflict
-    op.alter_column('entities', 'metadata', new_column_name='entity_metadata')
+    # No-op: Column was already created as 'entity_metadata' in the initial migration
+    # This migration is kept for version consistency but does nothing
+    pass
 
 
 def downgrade() -> None:
-    # Rename back from entity_metadata to metadata
-    op.alter_column('entities', 'entity_metadata', new_column_name='metadata')
+    # No-op: Nothing to undo
+    pass
