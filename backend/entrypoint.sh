@@ -28,28 +28,43 @@ log_error() {
 # Extract database connection parameters from DATABASE_URL if provided
 if [ -n "$DATABASE_URL" ]; then
     log_info "Extracting database connection from DATABASE_URL..."
+    log_info "DATABASE_URL format detected"
     # Parse DATABASE_URL (format: postgresql://user:password@host:port/dbname)
-    DB_HOST=$(echo "$DATABASE_URL" | sed -n 's/.*@\([^:]*\):.*/\1/p')
+    DB_HOST=$(echo "$DATABASE_URL" | sed -n 's/.*@\([^:\/]*\).*/\1/p')
     DB_USER=$(echo "$DATABASE_URL" | sed -n 's/.*:\/\/\([^:]*\):.*/\1/p')
+    log_info "Extracted DB_HOST: ${DB_HOST}"
+    log_info "Extracted DB_USER: ${DB_USER}"
     export DB_HOST DB_USER
 fi
 
 # Wait for database to be ready
 log_info "Waiting for database to be ready..."
-MAX_RETRIES=30
+MAX_RETRIES=60
 RETRY_COUNT=0
 
-until pg_isready -h "${DB_HOST:-postgres}" -U "${DB_USER:-postgres}" > /dev/null 2>&1; do
+# Temporarily disable 'exit on error' for database connection retries
+set +e
+
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    pg_isready -h "${DB_HOST:-postgres}" -U "${DB_USER:-postgres}" > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        log_info "Database is ready!"
+        break
+    fi
+
     RETRY_COUNT=$((RETRY_COUNT + 1))
     if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
-        log_error "Database did not become ready in time. Exiting."
+        log_error "Database did not become ready in time after $MAX_RETRIES attempts."
+        log_error "DB_HOST: ${DB_HOST:-postgres}"
+        log_error "DB_USER: ${DB_USER:-postgres}"
         exit 1
     fi
-    log_warn "Database not ready yet. Retrying in 2 seconds... ($RETRY_COUNT/$MAX_RETRIES)"
-    sleep 2
+    log_warn "Database not ready yet. Retrying in 3 seconds... ($RETRY_COUNT/$MAX_RETRIES)"
+    sleep 3
 done
 
-log_info "Database is ready!"
+# Re-enable 'exit on error'
+set -e
 
 # Enable pgvector extension if not already enabled
 log_info "Enabling pgvector extension..."
