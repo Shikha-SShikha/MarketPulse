@@ -12,7 +12,7 @@ import type { Signal, SignalSummary } from '../types';
 
 export default function AdminSignalList() {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { showSuccess, showError } = useToast();
 
   const [signals, setSignals] = useState<Signal[]>([]);

@@ -11,10 +11,6 @@ import {
 } from '@carbon/react';
 import {
   Add,
-  Notification,
-  Dashboard,
-  DataBase,
-  UserMultiple,
   Renew,
   Logout,
   CheckmarkOutline,
@@ -38,8 +34,6 @@ export default function AdminHeader({
   subtitle,
   onGenerateBrief,
   generating = false,
-  showBackButton = false,
-  onBack,
   onRefresh,
   refreshing = false
 }: AdminHeaderProps) {

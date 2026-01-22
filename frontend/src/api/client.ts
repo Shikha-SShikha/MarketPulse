@@ -32,7 +32,7 @@ apiClient.interceptors.response.use(
     if (import.meta.env.DEV) {
       console.error('[API Error]', {
         url: error.config?.url,
-        fullURL: error.config?.baseURL + error.config?.url,
+        fullURL: (error.config?.baseURL || '') + (error.config?.url || ''),
         method: error.config?.method,
         status: error.response?.status,
         data: error.response?.data,

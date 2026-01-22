@@ -58,9 +58,10 @@ export default function SegmentStatsWidget() {
       setError(null);
       const response = await getSegmentStats(7);
       setStats(response.stats);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to load segment stats:', err);
-      setError('Failed to load segment statistics');
+      const errorMessage = err?.response?.data?.detail || err?.message || 'Failed to load segment statistics';
+      setError(`Failed to load segment statistics: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

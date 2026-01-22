@@ -18,7 +18,7 @@ import {
   ProgressBar,
   Button,
 } from '@carbon/react';
-import { CheckmarkFilled, WarningFilled, ErrorFilled, ArrowLeft, Play } from '@carbon/icons-react';
+import { CheckmarkFilled, WarningFilled, ErrorFilled, Play } from '@carbon/icons-react';
 import { apiClient } from '../api/client';
 import AdminHeader from '../components/AdminHeader';
 
@@ -131,9 +131,9 @@ export default function EvaluationDashboard() {
   };
 
   const getSeverityTag = (severity: string) => {
-    const severityMap: Record<string, 'red' | 'yellow' | 'blue'> = {
+    const severityMap: Record<string, 'red' | 'warm-gray' | 'blue'> = {
       critical: 'red',
-      major: 'yellow',
+      major: 'warm-gray',
       minor: 'blue',
     };
     return severityMap[severity.toLowerCase()] || 'gray';
@@ -487,7 +487,7 @@ export default function EvaluationDashboard() {
                             return (
                               <TableCell key={cell.id}>
                                 {cell.value > 0 ? (
-                                  <Tag type="yellow" renderIcon={WarningFilled}>
+                                  <Tag type="warm-gray" renderIcon={WarningFilled}>
                                     {cell.value}
                                   </Tag>
                                 ) : (

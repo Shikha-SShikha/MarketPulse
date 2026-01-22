@@ -6,14 +6,6 @@ interface SignalEvidenceProps {
 }
 
 export default function SignalEvidence({ signal }: SignalEvidenceProps) {
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
-
   // Strip XML/HTML tags and extract headline (first sentence or first 100 chars)
   const getHeadline = (text: string): string => {
     // Remove XML/HTML tags
