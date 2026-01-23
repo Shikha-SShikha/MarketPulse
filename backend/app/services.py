@@ -70,6 +70,32 @@ def create_signal_from_dict(db: Session, signal_data: Dict) -> Signal:
 
     # Create signal-entity relationships if entity_ids provided
     entity_ids = signal_data.get('entity_ids', [])
+
+    # If no entity_ids provided, try to create/find entity for signal.entity
+    if not entity_ids and signal.entity:
+        # Try to find existing entity by name (case-insensitive)
+        existing_entity = db.query(Entity).filter(
+            Entity.name.ilike(signal.entity)
+        ).first()
+
+        if existing_entity:
+            entity_ids = [existing_entity.id]
+        else:
+            # Auto-create entity if it doesn't exist
+            # Infer segment from entity name using simple heuristics
+            segment = infer_entity_segment(signal.entity)
+
+            new_entity = Entity(
+                name=signal.entity,
+                segment=segment,
+                notes=f"Auto-created from signal {signal.id}",
+            )
+            db.add(new_entity)
+            db.commit()
+            db.refresh(new_entity)
+            entity_ids = [new_entity.id]
+            logger.info(f"Auto-created entity '{signal.entity}' with segment '{segment}'")
+
     if entity_ids:
         for idx, entity_id in enumerate(entity_ids):
             signal_entity = SignalEntity(
@@ -82,6 +108,48 @@ def create_signal_from_dict(db: Session, signal_data: Dict) -> Signal:
         db.commit()
 
     return signal
+
+
+def infer_entity_segment(entity_name: str) -> str:
+    """
+    Infer entity segment from entity name using keywords.
+
+    Returns one of: customer, competitor, industry, influencer
+    """
+    entity_lower = entity_name.lower()
+
+    # Known competitors (production/editorial service providers)
+    competitors = ['kriyadocs', 'knowledgeworks', 'cactus', 'editage', 'spi global',
+                   'straive', 'integra', 'tnq', 'exeter', 'aptara', 'mps', 'newgen',
+                   'aries', 'scholarone', 'ejournal']
+
+    # Known influencers (blogs, news sites, thought leaders)
+    influencers = ['scholarly kitchen', 'science editor', 'publishing perspectives',
+                   'knowledge speak', 'retraction watch', 'plos blog', 'stm publishing']
+
+    # Known industry organizations
+    industry_orgs = ['stm association', 'ismte', 'cse', 'ssp', 'cope', 'doaj',
+                     'crossref', 'orcid', 'oaspa']
+
+    # Publishers (mostly customers)
+    publishers = ['springer', 'elsevier', 'wiley', 'sage', 'taylor', 'oxford',
+                  'cambridge', 'nature', 'science', 'plos', 'frontiers', 'mdpi',
+                  'bmc', 'karger', 'thieme', 'wolters kluwer']
+
+    # Check for matches
+    if any(comp in entity_lower for comp in competitors):
+        return 'competitor'
+    elif any(inf in entity_lower for inf in influencers):
+        return 'influencer'
+    elif any(org in entity_lower for org in industry_orgs):
+        return 'industry'
+    elif any(pub in entity_lower for pub in publishers):
+        return 'customer'
+    else:
+        # Default: if it's a blog/news site -> influencer, otherwise industry
+        if any(kw in entity_lower for kw in ['blog', 'news', 'watch', 'kitchen', 'perspectives']):
+            return 'influencer'
+        return 'industry'
 
 
 def create_signal(db: Session, signal_data: SignalCreate, curator_name: Optional[str] = None) -> Signal:

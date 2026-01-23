@@ -94,9 +94,13 @@ def classify_text(text: str) -> Optional[Dict[str, any]]:
 
     Returns:
         Dictionary with event_type, topic, impact_areas
-        None if no event type is detected
+        None if content is irrelevant or cannot be classified
     """
     text_lower = text.lower()
+
+    # Filter out irrelevant content first
+    if not is_relevant_to_stm(text_lower):
+        return None
 
     # Detect event_type (required)
     event_type = None
@@ -105,16 +109,24 @@ def classify_text(text: str) -> Optional[Dict[str, any]]:
             event_type = evt
             break
 
-    if not event_type:
-        # Default to 'other' if we can't detect a specific event type
-        event_type = 'other'
-
-    # Detect topic
-    topic = 'General'
+    # Detect topic (required - if no topic detected, signal is too generic)
+    topic = None
     for top, keywords in TOPIC_KEYWORDS.items():
         if any(kw in text_lower for kw in keywords):
             topic = top
             break
+
+    # Reject signals with no event type AND no topic (too generic)
+    if not event_type and not topic:
+        return None
+
+    # If no event type but has topic, default to 'other'
+    if not event_type:
+        event_type = 'other'
+
+    # If no topic detected, reject (every signal must have a topic)
+    if not topic:
+        return None
 
     # Detect impact areas (can be multiple)
     impact_areas = []
@@ -131,6 +143,78 @@ def classify_text(text: str) -> Optional[Dict[str, any]]:
         'topic': topic,
         'impact_areas': impact_areas,
     }
+
+
+def is_relevant_to_stm(text_lower: str) -> bool:
+    """
+    Check if content is relevant to STM publishing intelligence.
+
+    Filters out:
+    - Journal TOC notices
+    - Generic announcements without context
+    - Non-publishing news
+
+    Args:
+        text_lower: Lowercased text to check
+
+    Returns:
+        True if relevant, False if should be filtered out
+    """
+    # Filter patterns for irrelevant content
+    irrelevant_patterns = [
+        # Journal TOC notices
+        r'volume \d+, issue \d+',
+        r'toc alert',
+        r'table of contents',
+        r'latest articles from',
+        r'new articles in',
+
+        # Generic journal announcements without context
+        r'^\s*science\s*$',  # Just "Science" with no context
+        r'^\s*nature\s*$',   # Just "Nature" with no context
+
+        # Other generic patterns
+        r'subscribe to',
+        r'email alert',
+        r'rss feed for',
+    ]
+
+    import re
+    for pattern in irrelevant_patterns:
+        if re.search(pattern, text_lower):
+            return False
+
+    # Must contain at least some publishing/research-related keywords
+    relevant_keywords = [
+        # Publishing activities
+        'publish', 'publication', 'journal', 'article', 'manuscript',
+        'peer review', 'editorial', 'editor', 'author',
+
+        # Research topics
+        'research', 'study', 'findings', 'discovery', 'breakthrough',
+
+        # Publishing industry
+        'open access', 'retraction', 'preprint', 'integrity',
+        'ai', 'artificial intelligence', 'machine learning',
+        'data', 'policy', 'mandate', 'guideline',
+
+        # Business/market
+        'acquire', 'merger', 'partnership', 'launch', 'announce',
+        'platform', 'service', 'workflow', 'system',
+
+        # Organizations
+        'publisher', 'society', 'association', 'university press',
+        'crossref', 'orcid', 'doi',
+    ]
+
+    # Check for at least one relevant keyword
+    has_relevant_keyword = any(kw in text_lower for kw in relevant_keywords)
+
+    # Too short and no relevant keywords = likely irrelevant
+    if len(text_lower) < 100 and not has_relevant_keyword:
+        return False
+
+    return True
 
 
 def extract_entities(text: str) -> List[str]:
