@@ -47,6 +47,7 @@ export default function SegmentStatsWidget() {
   const [stats, setStats] = useState<SegmentStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     loadStats();
@@ -58,12 +59,34 @@ export default function SegmentStatsWidget() {
       setError(null);
       const response = await getSegmentStats(7);
       setStats(response.stats);
+      setLastUpdated(new Date());
     } catch (err: any) {
       console.error('Failed to load segment stats:', err);
       const errorMessage = err?.response?.data?.detail || err?.message || 'Failed to load segment statistics';
       setError(`Failed to load segment statistics: ${errorMessage}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const formatLastUpdated = (date: Date | null): string => {
+    if (!date) return '';
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+
+    if (diffSecs < 60) {
+      return 'just now';
+    } else if (diffMins < 60) {
+      return `${diffMins} ${diffMins === 1 ? 'minute' : 'minutes'} ago`;
+    } else {
+      return date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
     }
   };
 
@@ -95,7 +118,18 @@ export default function SegmentStatsWidget() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Segment Overview</h2>
+      <div className="flex items-baseline justify-between mb-4">
+        <h2 className="text-xl font-semibold text-gray-800">Segment Overview</h2>
+        {lastUpdated && (
+          <button
+            onClick={loadStats}
+            className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+            title="Click to refresh"
+          >
+            Last updated: {formatLastUpdated(lastUpdated)}
+          </button>
+        )}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => {
           const config = SEGMENT_CONFIG[stat.segment as keyof typeof SEGMENT_CONFIG];
