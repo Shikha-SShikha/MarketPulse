@@ -130,13 +130,13 @@ export default function EvaluationDashboard() {
     return 'red';
   };
 
-  const getSeverityTag = (severity: string) => {
-    const severityMap: Record<string, 'red' | 'warm-gray' | 'blue'> = {
+  const getSeverityTag = (severity: string): 'red' | 'warm-gray' | 'blue' | 'gray' => {
+    const severityMap: Record<string, 'red' | 'warm-gray' | 'blue' | 'gray'> = {
       critical: 'red',
       major: 'warm-gray',
       minor: 'blue',
     };
-    return severityMap[severity.toLowerCase()] || 'gray';
+    return (severityMap[severity.toLowerCase()] as 'red' | 'warm-gray' | 'blue' | 'gray') || 'gray';
   };
 
   if (loading && !stats) {
@@ -487,7 +487,7 @@ export default function EvaluationDashboard() {
                             return (
                               <TableCell key={cell.id}>
                                 {cell.value > 0 ? (
-                                  <Tag type="warm-gray" renderIcon={WarningFilled}>
+                                  <Tag type="gray" renderIcon={WarningFilled}>
                                     {cell.value}
                                   </Tag>
                                 ) : (

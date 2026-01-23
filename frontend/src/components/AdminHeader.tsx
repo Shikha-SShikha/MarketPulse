@@ -34,6 +34,8 @@ export default function AdminHeader({
   subtitle,
   onGenerateBrief,
   generating = false,
+  showBackButton: _showBackButton,
+  onBack: _onBack,
   onRefresh,
   refreshing = false
 }: AdminHeaderProps) {

@@ -30,9 +30,11 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     // Log errors in development
     if (import.meta.env.DEV) {
+      const baseURL = error.config?.baseURL ?? '';
+      const url = error.config?.url ?? '';
       console.error('[API Error]', {
-        url: error.config?.url,
-        fullURL: (error.config?.baseURL || '') + (error.config?.url || ''),
+        url: url,
+        fullURL: baseURL + url,
         method: error.config?.method,
         status: error.response?.status,
         data: error.response?.data,
