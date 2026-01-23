@@ -150,3 +150,9 @@ Looking forward to your feedback!
 **P.S.** The first person to use MarketPulse intelligence in a successful deal gets [insert incentive - lunch, recognition, etc.] 😊
 
 **P.P.S.** If you find a competitor move we missed, let us know immediately - we'll add that source within 24 hours.
+
+---
+
+## ⚠️ Disclaimer
+
+MarketPulse uses AI to analyze and summarize intelligence. While we strive for accuracy, **AI can make mistakes**. Please verify critical information (pricing, dates, quotes, contracts) before using in customer conversations. Use this for directional intelligence and talking points. Each signal includes a source link for verification.
