@@ -424,9 +424,34 @@ def generate_brief_html(brief: WeeklyBrief, themes: List[Theme], signals_map: di
         """
 
         # Split so_what into sentences for bullet points
-        so_what_sentences = [s.strip() for s in theme.so_what.split('.') if s.strip()]
+        # Smart splitting that handles abbreviations (Dr., Ph.D., etc.)
+        import re
+
+        def split_into_sentences(text: str) -> list:
+            """Split text into sentences, handling common abbreviations."""
+            # Split on periods followed by space and capital letter
+            # BUT NOT if the period follows common abbreviations
+            pattern = r'(?<!\bDr)(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bProf)(?<!\bSr)(?<!\bJr)(?<!\bInc)(?<!\bLtd)(?<!\bCorp)(?<!\bvs)(?<!\betc)(?<!\be\.g)(?<!\bi\.e)\.(?=\s+[A-Z])'
+
+            # Split the text
+            sentences = re.split(pattern, text)
+
+            # Clean up and filter empty sentences
+            sentences = [s.strip() for s in sentences if s.strip()]
+
+            # Add periods back if missing
+            result = []
+            for s in sentences:
+                if s and not s.endswith(('.', '!', '?')):
+                    result.append(s + '.')
+                else:
+                    result.append(s)
+
+            return result
+
+        so_what_sentences = split_into_sentences(theme.so_what)
         for sentence in so_what_sentences:
-            html += f'                        <li>{sentence}.</li>\n'
+            html += f'                        <li>{sentence}</li>\n'
 
         html += """
                     </ul>

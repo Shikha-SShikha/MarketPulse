@@ -20,9 +20,27 @@ export default function ThemeCard({ theme, rank }: ThemeCardProps) {
   }[theme.aggregate_confidence] || 'bg-gray-100 text-gray-800 border-gray-200';
 
   // Split So What into sentences for bullet points
-  const soWhatSentences = theme.so_what
-    .split(/(?<=[.!?])\s+/)
-    .filter(s => s.trim().length > 0);
+  // Smart sentence splitting that handles abbreviations (Dr., Ph.D., etc.)
+  const splitIntoSentences = (text: string): string[] => {
+    // Split on periods followed by space and capital letter
+    // BUT NOT if the period follows common abbreviations
+    // Using negative lookbehind to avoid splitting after Dr., Mr., etc.
+    const pattern = /(?<!\bDr)(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bProf)(?<!\bSr)(?<!\bJr)(?<!\bInc)(?<!\bLtd)(?<!\bCorp)(?<!\bvs)(?<!\betc)(?<!\be\.g)(?<!\bi\.e)\.(?=\s+[A-Z])/;
+
+    // Split the text
+    const sentences = text.split(pattern).filter(s => s.trim());
+
+    // Add periods back if missing
+    return sentences.map(s => {
+      const trimmed = s.trim();
+      if (trimmed && !trimmed.endsWith('.') && !trimmed.endsWith('!') && !trimmed.endsWith('?')) {
+        return trimmed + '.';
+      }
+      return trimmed;
+    });
+  };
+
+  const soWhatSentences = splitIntoSentences(theme.so_what);
 
   // Determine if we should show "Read more" button
   const hasMultipleSentences = soWhatSentences.length > 2;
