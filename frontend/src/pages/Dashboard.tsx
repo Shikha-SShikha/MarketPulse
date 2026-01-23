@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, Clock, FileText, AlertCircle, RefreshCw, Download } from 'lucide-react';
 import {
   Header,
@@ -22,6 +22,7 @@ import { getErrorMessage } from '../utils/errorHandling';
 import type { WeeklyBrief } from '../types';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [brief, setBrief] = useState<WeeklyBrief | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -112,7 +113,10 @@ export default function Dashboard() {
         render={() => (
           <Header aria-label="MarketPulse">
             <SkipToContent />
-            <HeaderName href="#" prefix="">
+            <HeaderName href="#" prefix="" onClick={(e) => {
+              e.preventDefault();
+              navigate('/');
+            }}>
               MarketPulse
             </HeaderName>
             <HeaderGlobalBar>

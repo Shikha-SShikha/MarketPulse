@@ -68,7 +68,10 @@ export default function BriefDetail() {
         render={() => (
           <Header aria-label="MarketPulse">
             <SkipToContent />
-            <HeaderName href="#" prefix="">
+            <HeaderName href="#" prefix="" onClick={(e) => {
+              e.preventDefault();
+              navigate('/');
+            }}>
               MarketPulse
             </HeaderName>
             <HeaderGlobalBar>
