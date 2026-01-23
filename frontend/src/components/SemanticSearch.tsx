@@ -10,7 +10,7 @@ interface SemanticSearchProps {
 }
 
 export function SemanticSearch({
-  onResultClick,
+  onResultClick: _onResultClick,
   placeholder = "Ask a question... (e.g., 'What are competitors doing with AI integrity tools?')",
   limit = 20,
   defaultThreshold = 0.6,
@@ -175,8 +175,7 @@ export function SemanticSearch({
           {results.results.map((result: SemanticSearchResult) => (
             <div
               key={result.signal.id}
-              onClick={() => onResultClick?.(result.signal.id)}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
             >
               {/* Header with similarity score */}
               <div className="flex items-start justify-between mb-2">
@@ -202,27 +201,43 @@ export function SemanticSearch({
                 {result.signal.evidence_snippet}
               </p>
 
-              {/* Footer with metadata */}
-              <div className="flex items-center gap-4 text-xs text-gray-500">
-                <span className="flex items-center gap-1">
+              {/* Footer with metadata and action */}
+              <div className="flex items-center justify-between gap-4 text-xs">
+                <div className="flex items-center gap-4 text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    {result.signal.event_type}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    {result.signal.impact_areas.join(', ')}
+                  </span>
+                  <span className={`px-2 py-0.5 rounded ${
+                    result.signal.confidence === 'High' ? 'bg-green-100 text-green-800' :
+                    result.signal.confidence === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {result.signal.confidence}
+                  </span>
+                </div>
+
+                {/* View Source Button */}
+                <a
+                  href={result.signal.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors font-medium"
+                >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
-                  {result.signal.event_type}
-                </span>
-                <span className="flex items-center gap-1">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  {result.signal.impact_areas.join(', ')}
-                </span>
-                <span className={`px-2 py-0.5 rounded ${
-                  result.signal.confidence === 'High' ? 'bg-green-100 text-green-800' :
-                  result.signal.confidence === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
-                  {result.signal.confidence}
-                </span>
+                  View Source
+                </a>
               </div>
             </div>
           ))}
