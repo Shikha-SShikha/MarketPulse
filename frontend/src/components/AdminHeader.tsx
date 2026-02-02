@@ -17,6 +17,7 @@ import {
 } from '@carbon/icons-react';
 import NotificationBell from './NotificationBell';
 import { useAuth } from '../context/AuthContext';
+import TNQTechLogo from '../assets/TNQTech-Logo.svg?url';
 
 interface AdminHeaderProps {
   title?: string;
@@ -53,7 +54,30 @@ export default function AdminHeader({
               e.preventDefault();
               navigate('/');
             }}>
-              MarketPulse
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '0.5rem 0'
+              }}>
+                <img
+                  src={TNQTechLogo}
+                  alt="TNQTech"
+                  style={{
+                    height: '32px',
+                    width: 'auto',
+                    opacity: 0.9
+                  }}
+                />
+                <span style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#47aedc',
+                  letterSpacing: '-0.02em'
+                }}>
+                  MarketPulse
+                </span>
+              </div>
             </HeaderName>
             <HeaderNavigation aria-label="MarketPulse">
               <HeaderMenuItem onClick={() => navigate('/')} isCurrentPage={location.pathname === '/'}>
