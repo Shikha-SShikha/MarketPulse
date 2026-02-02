@@ -14,6 +14,7 @@ import NotificationBell from '../components/NotificationBell';
 import { getSignals } from '../api/signals';
 import { getErrorMessage } from '../utils/errorHandling';
 import type { Signal } from '../types';
+import TNQTechLogo from '../assets/TNQTech-Logo.svg?url';
 
 const SEGMENT_CONFIG = {
   customer: {
@@ -126,7 +127,30 @@ export default function SegmentSignals() {
               e.preventDefault();
               navigate('/');
             }}>
-              MarketPulse
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '0.5rem 0'
+              }}>
+                <img
+                  src={TNQTechLogo}
+                  alt="TNQTech"
+                  style={{
+                    height: '32px',
+                    width: 'auto',
+                    opacity: 0.9
+                  }}
+                />
+                <span style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#47aedc',
+                  letterSpacing: '-0.02em'
+                }}>
+                  MarketPulse
+                </span>
+              </div>
             </HeaderName>
             <HeaderGlobalBar>
               <div style={{ display: 'flex', alignItems: 'center', paddingRight: '1rem' }}>

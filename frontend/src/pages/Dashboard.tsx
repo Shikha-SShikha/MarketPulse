@@ -20,6 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorHandling';
 import type { WeeklyBrief } from '../types';
+import TNQTechLogo from '../assets/TNQTech-Logo.svg?url';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -34,6 +35,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadBrief();
+
+    // Check if we should reopen search modal (returning from a signal)
+    const shouldReopenSearch = sessionStorage.getItem('reopenSearch');
+    if (shouldReopenSearch === 'true') {
+      sessionStorage.removeItem('reopenSearch');
+      // Small delay to ensure page is fully loaded
+      setTimeout(() => {
+        setSearchModalOpen(true);
+      }, 300);
+    }
   }, []);
 
   // Global Cmd/Ctrl+K keyboard shortcut for search
@@ -117,7 +128,30 @@ export default function Dashboard() {
               e.preventDefault();
               navigate('/');
             }}>
-              MarketPulse
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '0.5rem 0'
+              }}>
+                <img
+                  src={TNQTechLogo}
+                  alt="TNQTech"
+                  style={{
+                    height: '32px',
+                    width: 'auto',
+                    opacity: 0.9
+                  }}
+                />
+                <span style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#47aedc',
+                  letterSpacing: '-0.02em'
+                }}>
+                  MarketPulse
+                </span>
+              </div>
             </HeaderName>
             <HeaderGlobalBar>
               <div style={{ display: 'flex', alignItems: 'center', paddingRight: '1rem' }}>
@@ -309,7 +343,29 @@ export default function Dashboard() {
       {/* Footer */}
       <footer className="border-t border-gray-200 mt-12">
         <div className="max-w-4xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-          <p className="mb-1">MarketPulse</p>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.75rem',
+            marginBottom: '0.5rem'
+          }}>
+            <img
+              src={TNQTechLogo}
+              alt="TNQTech"
+              style={{
+                height: '24px',
+                width: 'auto',
+                opacity: 0.7
+              }}
+            />
+            <span style={{
+              fontWeight: 600,
+              color: '#47aedc'
+            }}>
+              MarketPulse
+            </span>
+          </div>
           <p className="text-xs">AI-generated intelligence • Verify critical information before use</p>
         </div>
       </footer>

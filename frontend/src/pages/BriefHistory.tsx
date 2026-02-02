@@ -12,6 +12,7 @@ import {
 import { Home } from '@carbon/icons-react';
 import NotificationBell from '../components/NotificationBell';
 import { getErrorMessage } from '../utils/errorHandling';
+import TNQTechLogo from '../assets/TNQTech-Logo.svg?url';
 
 interface BriefSummary {
   id: string;
@@ -77,7 +78,30 @@ export default function BriefHistory() {
               e.preventDefault();
               navigate('/');
             }}>
-              MarketPulse
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '0.5rem 0'
+              }}>
+                <img
+                  src={TNQTechLogo}
+                  alt="TNQTech"
+                  style={{
+                    height: '32px',
+                    width: 'auto',
+                    opacity: 0.9
+                  }}
+                />
+                <span style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#47aedc',
+                  letterSpacing: '-0.02em'
+                }}>
+                  MarketPulse
+                </span>
+              </div>
             </HeaderName>
             <HeaderGlobalBar>
               <div style={{ display: 'flex', alignItems: 'center', paddingRight: '1rem' }}>
@@ -218,7 +242,28 @@ export default function BriefHistory() {
       {/* Footer */}
       <footer className="border-t border-gray-200 mt-12">
         <div className="max-w-4xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-          MarketPulse
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.75rem'
+          }}>
+            <img
+              src={TNQTechLogo}
+              alt="TNQTech"
+              style={{
+                height: '24px',
+                width: 'auto',
+                opacity: 0.7
+              }}
+            />
+            <span style={{
+              fontWeight: 600,
+              color: '#47aedc'
+            }}>
+              MarketPulse
+            </span>
+          </div>
         </div>
       </footer>
     </div>
